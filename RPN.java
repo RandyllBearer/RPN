@@ -24,12 +24,11 @@ public class RPN {
 
 	/*
 	* Read(), Eval(), Print()
+	* Break out of loop if "QUIT" is consumed
 	*/
 	public static void runLoop() {
-		//will have to have eval() consume a 'QUIT' keyword to break this loop
 		while (true) {
 			
-			//https://docs.oracle.com/javase/7/docs/api/java/util/Stack.html
 			String[] resultTokens = read(1);
 			
 			String resultString = "";
@@ -62,7 +61,7 @@ public class RPN {
 		tokens = userString.split(" ");
 		
 		//return
-		//find some way to close() scanner without closing system.in()?
+		//LOOKUP: find some way to close() scanner without closing system.in()?
 		lineNum = lineNum + 1;
 		return tokens;
 	}
@@ -78,9 +77,9 @@ public class RPN {
 		Stack stack = new Stack();
 		String currentToken = "";
 		BigInteger number = null;
-		boolean letFlag = false;
+		boolean letFlag = false;	//set true if "LET" keyword was parsed
 		String toChange = "";
-		errorFlag = false;
+		errorFlag = false;			//set true if need to print to stderr
 		
 		//logic
 		int i = 0;
@@ -98,7 +97,7 @@ public class RPN {
 					//let must be followed by variable + values
 					i = i + 1;
 					if (i + 1 >= toEval.length) {
-						result = "Line " + lineNum + ": Operator LET applied to Empty stack";
+						result = "Line " + lineNum + ": Operator LET applied to empty stack";
 						errorFlag = true;
 						return result;
 					}
@@ -118,11 +117,24 @@ public class RPN {
 				} else if (currentToken.equals("QUIT") && i == 0 ) {
 					return "QUIT";
 					
+				} else if (currentToken.equals("LET") && i != 0 ) {
+					result = "Line " + lineNum + ": Could not evaluate expression";
+					return result;
+					
+				} else if (currentToken.equals("PRINT") && i != 0 ) {
+					result = "Line " + lineNum + ": Could not evaluate expression";
+					return result;
+					
+				} else if (currentToken.equals("QUIT") && i != 0 ) {
+					result = "Line " + lineNum + ": Could not evaluate expression";
+					return result;
+					
 				} else if (currentToken.equals("+") ) {
 					try {
 						BigInteger second = (BigInteger)stack.pop();
 						BigInteger first = (BigInteger)stack.pop();
 						stack.push(first.add(second) );
+						
 					} catch (EmptyStackException ese) {
 						result = "Line " + lineNum + ": Operator + applied to empty stack";
 						errorFlag = true;
@@ -134,6 +146,7 @@ public class RPN {
 						BigInteger second = (BigInteger)stack.pop();
 						BigInteger first = (BigInteger)stack.pop();
 						stack.push(first.subtract(second) );
+						
 					} catch (EmptyStackException ese) {
 						result = "Line " + lineNum + ": Operator - applied to empty stack";
 						errorFlag = true;
@@ -145,6 +158,7 @@ public class RPN {
 						BigInteger second = (BigInteger)stack.pop();
 						BigInteger first = (BigInteger)stack.pop();
 						stack.push(first.divide(second) );
+						
 					} catch (EmptyStackException ese) {
 						result = "Line " + lineNum + ": Operator / applied to empty stack";
 						errorFlag = true;
@@ -156,6 +170,7 @@ public class RPN {
 						BigInteger second = (BigInteger)stack.pop();
 						BigInteger first = (BigInteger)stack.pop();
 						stack.push(first.multiply(second) );
+						
 					} catch (EmptyStackException ese) {
 						result = "Line " + lineNum + ": Operator * applied to empty stack";
 						errorFlag = true;
@@ -165,8 +180,8 @@ public class RPN {
 				} else if ( currentToken.length() == 1 && toCheck > 64 && toCheck < 91 ) {
 					BigInteger variable = variables.get(currentToken);
 					if (variable == null) {
-						result = "Line " + lineNum + ": Variable '";
-						result = result + currentToken + "' is not initialized";
+						result = "Line " + lineNum + ": Variable ";
+						result = result + currentToken + " is not initialized";
 						errorFlag = true;
 						return result;
 					}
@@ -193,8 +208,8 @@ public class RPN {
 		
 		BigInteger resultant = (BigInteger)stack.pop();
 		
-		//write to variable
 		if (letFlag == true) {
+			//write to variable
 			variables.put(toChange, resultant);
 		}
 		
@@ -206,8 +221,10 @@ public class RPN {
 	* Accepts a string and prints it back to user
 	*/
 	public static void print(String toPrint, int mode) {
+		
 		if (errorFlag == true) {
 			System.err.println(toPrint);
+			
 		} else {
 			System.out.println(toPrint);
 		}
@@ -215,12 +232,16 @@ public class RPN {
 	}
 
 	/*
-	* Main method, act accordingly
+	* Main method
+	* Determine which mode to run the program in by checking if arguments exist
+	* If no arguments, run REPL
+	* If arguments, read in from files
 	*/
 	public static void main(String[] args) {
 		
 		if (args.length == 0) {
 			runLoop();
+			
 		} else { 
 			readFiles();
 		}
@@ -230,13 +251,14 @@ public class RPN {
 	}
 	
 	//------------ debug code ---------------------
-	private static ArrayList<String> debugOutput = new ArrayList<String>();
 	
 	/*
 	* To be used as a way to test the runLoop() function
 	*/
-	public static ArrayList<String> debugRunLoop(int i) {
+	public ArrayList<String> debugRunLoop(int i) {
 		//will have to have eval() consume a 'QUIT' keyword to break this loop'
+		ArrayList<String> debugOutput = new ArrayList<String>();
+		lineNum = 0;
 		int j = 0;
 		while (j < i) {
 			
@@ -258,7 +280,20 @@ public class RPN {
 		}
 		
 		return debugOutput;
-		
+	}
+	
+	/*
+	* To be used for testing different modes between repl / files
+	*/
+	public void setErrorFlag (boolean toSet) {
+		errorFlag = toSet;
+	}
+	
+	/*
+	* To be used for setting lineNum to predict error output messages
+	*/
+	public void setLineNum (int num) {
+		lineNum = num;
 	}
 	
 	//end of program
