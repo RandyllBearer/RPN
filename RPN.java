@@ -15,6 +15,22 @@ public class RPN {
 	//------------ functional methods ----------------
 	
 	/*
+	Method for reading file path and checking for errors
+	BufferedReader is returned if file is valid
+	If any file is invalid, the program exits when that file has been reached
+	*/
+	public static BufferedReader openFile(String path){
+		BufferedReader inFile = null;
+		try{
+			inFile = new BufferedReader(new FileReader(path));
+		}catch(FileNotFoundException fne){
+			System.out.println("File " + path + " could not be read.  Exiting...");
+			System.exit(0);
+		}
+		return inFile;
+	}
+	
+	/*
 	* Loop through files, evaluating each line
 	* read() / eval() each string
 	* Mode = 0
@@ -28,15 +44,18 @@ public class RPN {
 			try{
 				while((line = inFile.readLine()) != null){
 					resultTokens = read(line,0);
-					resultString = eval(resultTokens, 0);
-					if (resultString.equals("QUIT")) {
-						System.exit(0);
-					}
-					if (!resultString.equals("")) {
-						print(resultString, 1);
-					}
-					if(errorFlag){
-						System.exit(0);
+					
+					if (resultTokens.length > 0 && !resultTokens[0].equals("")) {
+						resultString = eval(resultTokens, 0);
+						if (resultString.equals("QUIT")) {
+							System.exit(0);
+						}
+						if (!resultString.equals("")) {
+							print(resultString, 1);
+						}
+						if(errorFlag){
+							System.exit(0);
+						}
 					}
 				}
 			}catch(IOException ioe){
@@ -57,9 +76,12 @@ public class RPN {
 			String[] resultTokens = read("",1);
 			
 			String resultString = "";
-			if (resultTokens.length > 0 ) {
+			if (resultTokens.length > 0 && !resultTokens[0].equals("")) {
 				resultString = eval(resultTokens, 1);
+			}else{
+				System.out.print("Line " + lineNum + ": No Input");
 			}
+			
 			if (resultString.equals("QUIT")) {
 				break;
 			}
@@ -67,22 +89,6 @@ public class RPN {
 			print(resultString, 1);
 				
 		}
-	}
-	
-	/*
-	Method for reading file path and checking for errors
-	BufferedReader is returned if file is valid
-	If any file is invalid, the program exits
-	*/
-	public static BufferedReader openFile(String path){
-		BufferedReader inFile = null;
-		try{
-			inFile = new BufferedReader(new FileReader(path));
-		}catch(FileNotFoundException fne){
-			System.out.println("File " + path + " could not be read.  Exiting...");
-			System.exit(0);
-		}
-		return inFile;
 	}
 	
 	/*

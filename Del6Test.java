@@ -40,7 +40,9 @@ public class Del6Test {
 	//!!! persistence, let eval() unit tests handle all minor cases
 	//!! PERHAPS LABEL EACH TEST WITH REQUIREMENT#
 	
+	
 	/*
+	* TEST 1
 	* Assert that runLoop() will return the proper result of an addition
 	* rpn expression.
 	*/
@@ -70,7 +72,9 @@ public class Del6Test {
 	
 	//------------- read() ---------------
 	
+	
 	/*
+	* TEST 2
 	* Assert that read() returns a properly split array of strings
 	* maintaining all characters as uppercase.
 	*/
@@ -81,12 +85,14 @@ public class Del6Test {
 		System.setIn(testIn);
 		
 		String[] expectedOutput = {"LET", "A", "10", "20", "*" };
-		String[] observedOutput = testRPN.read(1);
+		String[] observedOutput = testRPN.read("", 1);
 		
 		assertArrayEquals(expectedOutput, observedOutput);
 	}
 	
+	
 	/*
+	* TEST 3
 	* Assert that read() returns a properly split array of uppercase
 	* strings when it reads in lowercase strings.
 	*/
@@ -97,12 +103,14 @@ public class Del6Test {
 		System.setIn(testIn);
 		
 		String[] expectedOutput = {"LET", "A", "10", "20", "*" };
-		String[] observedOutput = testRPN.read(1);
+		String[] observedOutput = testRPN.read("", 1);
 		
 		assertArrayEquals(expectedOutput, observedOutput);
 	}
 	
+	
 	/*
+	* TEST 4
 	* Assert that read() returns a properly split array of uppercase
 	* strings when it reads in mixedcase strings.
 	*/
@@ -113,7 +121,7 @@ public class Del6Test {
 		System.setIn(testIn);
 		
 		String[] expectedOutput = {"LET", "A", "10", "20", "*" };
-		String[] observedOutput = testRPN.read(1);
+		String[] observedOutput = testRPN.read("", 1);
 		
 		assertArrayEquals(expectedOutput, observedOutput);
 	}
@@ -121,6 +129,7 @@ public class Del6Test {
 	//------------- eval() ----------------
 	
 	/*
+	* TEST 5
 	* Assert that when passed a valid division rpn expression,
 	* eval() will return the proper result string to be printed
 	*/
@@ -136,7 +145,9 @@ public class Del6Test {
 		assertEquals(expectedOutput, observedOutput );
 	}
 	
+	
 	/*
+	* TEST 6
 	* Assert that when passed a valid addition rpn expression,
 	* eval() will return the proper result string to be printed
 	*/
@@ -152,7 +163,9 @@ public class Del6Test {
 		assertEquals(expectedOutput, observedOutput );
 	}
 	
+	
 	/*
+	* TEST 7
 	* Assert that when passed a valid subtraction rpn expression,
 	* eval() will return the proper result string to be printed
 	*/
@@ -169,6 +182,7 @@ public class Del6Test {
 	}
 	
 	/*
+	* TEST 8
 	* Assert that when passed a valid multiplication rpn expression,
 	* eval() will return the proper result string to be printed
 	*/
@@ -184,7 +198,9 @@ public class Del6Test {
 		assertEquals(expectedOutput, observedOutput );
 	}
 	
+	
 	/*
+	* TEST 9
 	* Assert that when eval() is passed an rpn expression which
 	* includes an uninitialized variable that it returns the proper
 	* error string
@@ -201,7 +217,9 @@ public class Del6Test {
 		assertEquals(expectedOutput, observedOutput );
 	}
 	
+	
 	/*
+	* TEST 10
 	* Assert that when eval() is passed an rpn expression which
 	* contains too many operators, that it returns the proper
 	* error string
@@ -218,7 +236,9 @@ public class Del6Test {
 		assertEquals(expectedOutput, observedOutput );
 	}
 	
+	
 	/*
+	* TEST 11
 	* Assert that when eval() is passed an rpn expression which
 	* results in the stack containing more than one element that it
 	* returns the proper error string
@@ -235,7 +255,9 @@ public class Del6Test {
 		assertEquals(expectedOutput, observedOutput );
 	}
 	
+	
 	/*
+	* TEST 12
 	* Assert that when eval() is passed an rpn expression which
 	* contains an invalid keyword, that it returns the proper
 	* error string
@@ -252,7 +274,9 @@ public class Del6Test {
 		assertEquals(expectedOutput, observedOutput );
 	}
 	
+	
 	/*
+	* TEST 13
 	* Assert that when eval() is passed an rpn expression which
 	* contains a keyword in a non-evaluatable location, that it
 	* returns the proper error string.
@@ -269,7 +293,9 @@ public class Del6Test {
 		assertEquals(expectedOutput, observedOutput );
 	}
 	
+	
 	/*
+	* TEST 14
 	* Assert that when eval() is passed an rpn expression which
 	* contains a keyword in a non-evaluatable location, that it
 	* returns the proper error string.
@@ -290,7 +316,9 @@ public class Del6Test {
 	
 	//------------- print() ---------------
 	
+	
 	/*
+	* TEST 15
 	* Assert that print() will output its given string to the correct
 	* system.out stream when errorFlag = false;
 	*/
@@ -310,7 +338,9 @@ public class Del6Test {
 		
 	}
 	
+	
 	/*
+	* TEST 16
 	* Assert that print() will output its given string to the correct
 	* system.err stream when errorFlag = true;
 	*/
@@ -332,7 +362,7 @@ public class Del6Test {
 	//------------ readFiles() ----------
 	/*
 	//
-	@Test
+	@TEST 17
 	public void test0() {
 		
 	}
