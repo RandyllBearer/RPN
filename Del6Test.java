@@ -36,19 +36,14 @@ public class Del6Test {
 	
 	//------------ runLoop() ------------
 	
-	//!!! These tests should be rewritten, should use runLoop() to test variable
-	//!!! persistence, let eval() unit tests handle all minor cases
-	//!! PERHAPS LABEL EACH TEST WITH REQUIREMENT#
-	
-	
 	/*
-	* TEST 1
 	* Assert that runLoop() will return the proper result of an addition
 	* rpn expression.
 	*/
 	@Test
 	public void testRunLoopValidAddition() {
 		RPN testRPN = new RPN();
+		testRPN.resetHashmap();
 		
 		ByteArrayInputStream testIn = new ByteArrayInputStream("LET A 10".getBytes());
 		System.setIn(testIn);
@@ -68,19 +63,45 @@ public class Del6Test {
 		
 	}
 	
+	/*
+	* Assert that runLoop() will display the proper error message
+	* when there are too many elements left on the stack.
+	*/
+	@Test
+	public void testRunLoopInvalidMultiplication() {
+		RPN testRPN = new RPN();
+		testRPN.resetHashmap();
+		
+		ByteArrayInputStream testIn = new ByteArrayInputStream("LET A 10".getBytes());
+		System.setIn(testIn);
+	
+		ArrayList<String> testOutput = testRPN.debugRunLoop(1);
+		String expectedOutput = "10";
+		String observedOutput = testOutput.get(0);
+		
+		testIn = new ByteArrayInputStream("A 10 10 +".getBytes());
+		System.setIn(testIn);
+		
+		testOutput = testRPN.debugRunLoop(1);
+		String expectedOutput2 = "Line 1: 2 elements in stack after evaluation";
+		String observedOutput2 = testOutput.get(0);
+		
+		assertTrue( expectedOutput.equals(observedOutput) && expectedOutput2.equals(observedOutput2) );
+		
+	}
 	
 	
 	//------------- read() ---------------
 	
 	
 	/*
-	* TEST 2
 	* Assert that read() returns a properly split array of strings
 	* maintaining all characters as uppercase.
 	*/
 	@Test
 	public void testReadUppercase() {
 		RPN testRPN = new RPN();
+		testRPN.resetHashmap();
 		ByteArrayInputStream testIn = new ByteArrayInputStream("LET A 10 20 *".getBytes());
 		System.setIn(testIn);
 		
@@ -92,13 +113,13 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 3
 	* Assert that read() returns a properly split array of uppercase
 	* strings when it reads in lowercase strings.
 	*/
 	@Test
 	public void testReadLowercase() {
 		RPN testRPN = new RPN();
+		testRPN.resetHashmap();
 		ByteArrayInputStream testIn = new ByteArrayInputStream("let a 10 20 *".getBytes());
 		System.setIn(testIn);
 		
@@ -110,7 +131,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 4
 	* Assert that read() returns a properly split array of uppercase
 	* strings when it reads in mixedcase strings.
 	*/
@@ -121,6 +141,7 @@ public class Del6Test {
 		System.setIn(testIn);
 		
 		String[] expectedOutput = {"LET", "A", "10", "20", "*" };
+
 		String[] observedOutput = testRPN.read("", 1);
 		
 		assertArrayEquals(expectedOutput, observedOutput);
@@ -129,7 +150,6 @@ public class Del6Test {
 	//------------- eval() ----------------
 	
 	/*
-	* TEST 5
 	* Assert that when passed a valid division rpn expression,
 	* eval() will return the proper result string to be printed
 	*/
@@ -147,7 +167,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 6
 	* Assert that when passed a valid addition rpn expression,
 	* eval() will return the proper result string to be printed
 	*/
@@ -165,7 +184,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 7
 	* Assert that when passed a valid subtraction rpn expression,
 	* eval() will return the proper result string to be printed
 	*/
@@ -182,7 +200,6 @@ public class Del6Test {
 	}
 	
 	/*
-	* TEST 8
 	* Assert that when passed a valid multiplication rpn expression,
 	* eval() will return the proper result string to be printed
 	*/
@@ -200,7 +217,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 9
 	* Assert that when eval() is passed an rpn expression which
 	* includes an uninitialized variable that it returns the proper
 	* error string
@@ -219,7 +235,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 10
 	* Assert that when eval() is passed an rpn expression which
 	* contains too many operators, that it returns the proper
 	* error string
@@ -238,7 +253,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 11
 	* Assert that when eval() is passed an rpn expression which
 	* results in the stack containing more than one element that it
 	* returns the proper error string
@@ -257,7 +271,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 12
 	* Assert that when eval() is passed an rpn expression which
 	* contains an invalid keyword, that it returns the proper
 	* error string
@@ -276,7 +289,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 13
 	* Assert that when eval() is passed an rpn expression which
 	* contains a keyword in a non-evaluatable location, that it
 	* returns the proper error string.
@@ -295,7 +307,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 14
 	* Assert that when eval() is passed an rpn expression which
 	* contains a keyword in a non-evaluatable location, that it
 	* returns the proper error string.
@@ -318,7 +329,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 15
 	* Assert that print() will output its given string to the correct
 	* system.out stream when errorFlag = false;
 	*/
@@ -340,7 +350,6 @@ public class Del6Test {
 	
 	
 	/*
-	* TEST 16
 	* Assert that print() will output its given string to the correct
 	* system.err stream when errorFlag = true;
 	*/
@@ -359,12 +368,62 @@ public class Del6Test {
 		
 	}
 	
-	//------------ readFiles() ----------
+	//------------ openFile() ----------
+
 	/*
-	//
-	@TEST 17
-	public void test0() {
-		
-	}
+	* Assert that openFile() is able to open a valid filepath without error.
 	*/
+	@Test
+	public void testOpenFileValidPath() {
+		RPN testRPN = new RPN();
+		BufferedReader inFile = null;
+		
+		inFile = testRPN.openFile("./test_files/File1.rpn");
+		
+		assertTrue(inFile != null);
+	}
+	
+	/*
+	* Assert that openFile() will throw an exception when filepath does not exist.
+	*/
+	@Test
+	public void testOpenFileInvalidPath() {
+		RPN testRPN = new RPN();
+		BufferedReader inFile = null;
+
+		inFile = testRPN.openFile("./test_files/shouldnt.exist");
+		
+		assertTrue(inFile == null);
+	}
+	
+	//-------------- readFiles() ----------
+	
+	/*
+	* Assert that readFiles() will return true when its evaluation finishes successfuly
+	*/
+	@Test
+	public void testReadFilesValid() {
+		RPN testRPN = new RPN();
+		String[] testArguments = new String[1];
+		testArguments[0] = "./test_files/File2.rpn";
+		
+		boolean result = testRPN.readFiles(testArguments);
+		
+		assertTrue(result);
+	}
+	
+	/*
+	* Assert that readFiles() will return false when its evaluation comes across an error
+	*/
+	@Test
+	public void testReadFilesInvalid() {
+		RPN testRPN = new RPN();
+		String[] testArguments = new String[1];
+		testArguments[0] = "./test_files/Bad.rpn";
+		
+		boolean result = testRPN.readFiles(testArguments);
+		
+		assertFalse(result);
+	}
+	
 }

@@ -1,10 +1,11 @@
 import java.math.BigInteger;	//https://docs.oracle.com/javase/7/docs/api/java/math/BigInteger.html
-import java.util.*;	
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.*;	
 
 /*
-*
+* Consult the requirements/explanation of the program here
+* https://github.com/laboon/CS1632_Fall2017/blob/master/deliverables/6/deliverable6.md
 */
 public class RPN {
 	//implementation of global variables
@@ -24,19 +25,20 @@ public class RPN {
 	* returns false on unsuccessful evaluation
 	*/
 	public static boolean readFiles(String[] args) {
-		String line, resultString;
+		String line;
+		String resultString;
 		String[] resultTokens;
 		
-		for(String uments:args){
+		for (String uments:args) {
 			BufferedReader inFile = openFile(uments);
 			
-			if(inFile == null){
+			if (inFile == null) {
 				errorCode = 5;
 				return false;
 			}
 			
-			try{
-				while((line = inFile.readLine()) != null){
+			try {
+				while ((line = inFile.readLine()) != null) {
 					resultTokens = read(line,0);
 					if (resultTokens.length > 0 && !resultTokens[0].equals("")) {
 						resultString = eval(resultTokens, 0);
@@ -48,14 +50,14 @@ public class RPN {
 						if (!resultString.equals("")) {
 							print(resultString, 1);
 						}
-						if(errorFlag){
+						if (errorFlag) {
 							errorCode = 5;
 							return false;
 						}
 						
 					}
 				}
-			}catch(IOException ioe){
+			} catch (IOException ioe) {
 				System.out.println("Error occurred while trying to read " + uments);
 				errorCode = 5;
 				return false;
@@ -79,7 +81,7 @@ public class RPN {
 			String resultString = "";
 			if (resultTokens.length > 0 && !resultTokens[0].equals("")) {
 				resultString = eval(resultTokens, 1);
-			}else{
+			} else {
 				System.out.print("Line " + lineNum + ": No Input");
 			}
 			
@@ -97,16 +99,16 @@ public class RPN {
 	* BufferedReader is returned if file is valid
 	* If any file is invalid, the program exits
 	*/
-	public static BufferedReader openFile(String path){
+	public static BufferedReader openFile(String path) {
 		BufferedReader inFile = null;
-		try{
+		try {
 			File newFile = new File(path);
 			InputStream inputStream = new FileInputStream(newFile);
 			Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 			inFile = new BufferedReader(reader);
 			
 			//inFile = new BufferedReader(new FileReader(path));
-		}catch(FileNotFoundException fne){
+		} catch (FileNotFoundException fne) {
 			System.err.println("File " + path + " could not be read.  Exiting...");
 			return null;
 		}
@@ -123,11 +125,10 @@ public class RPN {
 		String[] tokens = null;
 		
 		//logic
-		if(mode==0){
+		if (mode == 0) {
 			String fileString = inputStr.toUpperCase(Locale.ENGLISH);
 			tokens = fileString.split(" ");
-		}
-		else if(mode==1){
+		} else if (mode == 1) {
 			Scanner scanner = new Scanner(System.in, "UTF-8");
 			System.out.print("> ");
 			
@@ -296,7 +297,7 @@ public class RPN {
 		if (letFlag == true) {
 			//write to variable
 			variables.put(toChange, resultant);
-			if(mode==0){
+			if (mode == 0) {
 				return "";
 			}
 		}
@@ -336,7 +337,7 @@ public class RPN {
 			
 			System.exit(errorCode);
 			
-		}catch (Exception e) {
+		} catch (Exception exception) {
 			System.err.println("ERROR: Unexpected error occured, program will now exit...");
 			System.exit(5);
 		}
@@ -378,21 +379,21 @@ public class RPN {
 	/*
 	* To be used for testing different modes between repl / files
 	*/
-	public static void setErrorFlag (boolean toSet) {
+	public static void setErrorFlag(boolean toSet) {
 		errorFlag = toSet;
 	}
 	
 	/*
 	* To be used for setting lineNum to predict error output messages
 	*/
-	public static void setLineNum (int num) {
+	public static void setLineNum(int num) {
 		lineNum = num;
 	}
 	
 	/*
 	* To be used for resetting variable initializations;
 	*/
-	public static void resetHashmap () {
+	public static void resetHashmap() {
 		variables = new HashMap<String, BigInteger>();
 	}
 	
