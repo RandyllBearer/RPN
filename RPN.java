@@ -1,10 +1,12 @@
 import java.math.BigInteger;	//https://docs.oracle.com/javase/7/docs/api/java/math/BigInteger.html
 import java.util.*;	
+import java.io.*;
 
 /*
 *
 */
 public class RPN {
+	//implementation of global variables
 	//https://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html
 	private static HashMap<String, BigInteger> variables = new HashMap<String, BigInteger>();	
 	private static int lineNum = 0;
@@ -13,23 +15,46 @@ public class RPN {
 	//------------ functional methods ----------------
 	
 	/*
-	* Concatenate all file paths into 1 string
+	* Loop through files, evaluating each line
 	* read() / eval() each string
 	* Mode = 0
 	*/
-	public static void readFiles() {
+	public static void readFiles(String[] args) {
+		String line, resultString;
+		String[] resultTokens;
 		
-		
+		for(String uments:args){
+			BufferedReader inFile = openFile(uments);
+			try{
+				while((line = inFile.readLine()) != null){
+					resultTokens = read(line,0);
+					resultString = eval(resultTokens, 0);
+					if (resultString.equals("QUIT")) {
+						System.exit(0);
+					}
+					if (!resultString.equals("")) {
+						print(resultString, 1);
+					}
+					if(errorFlag){
+						System.exit(0);
+					}
+				}
+			}catch(IOException ioe){
+				System.out.println("Error occurred while trying to read " + uments);
+				System.exit(0);
+			}
+		}
 	}
 
 	/*
 	* Read(), Eval(), Print()
 	* Break out of loop if "QUIT" is consumed
+	* Mode = 1
 	*/
 	public static void runLoop() {
 		while (true) {
 			
-			String[] resultTokens = read(1);
+			String[] resultTokens = read("",1);
 			
 			String resultString = "";
 			if (resultTokens.length > 0 ) {
@@ -43,22 +68,45 @@ public class RPN {
 				
 		}
 	}
-
+	
+	/*
+	Method for reading file path and checking for errors
+	BufferedReader is returned if file is valid
+	If any file is invalid, the program exits
+	*/
+	public static BufferedReader openFile(String path){
+		BufferedReader inFile = null;
+		try{
+			inFile = new BufferedReader(new FileReader(path));
+		}catch(FileNotFoundException fne){
+			System.out.println("File " + path + " could not be read.  Exiting...");
+			System.exit(0);
+		}
+		return inFile;
+	}
+	
 	/*
 	* Reads in a line of input from the user
 	* Splits it by a whitespace delimiter
 	* returns the array of split strings
 	*/
-	public static String[] read(int mode) {
+	public static String[] read(String inputStr, int mode) {
 		//variables
-		Scanner scanner = new Scanner(System.in, "UTF-8");
 		String[] tokens = null;
 		
 		//logic
-		System.out.print("> ");
-		String userString = scanner.nextLine();
-		userString = userString.toUpperCase(Locale.ENGLISH);	//allow for case-insenstivity
-		tokens = userString.split(" ");
+		if(mode==0){
+			String fileString = inputStr.toUpperCase(Locale.ENGLISH);
+			tokens = fileString.split(" ");
+		}
+		else if(mode==1){
+			Scanner scanner = new Scanner(System.in, "UTF-8");
+			System.out.print("> ");
+			
+			String userString = scanner.nextLine();
+			userString = userString.toUpperCase(Locale.ENGLISH);	//allow for case-insenstivity
+			tokens = userString.split(" ");
+		}
 		
 		//return
 		//LOOKUP: find some way to close() scanner without closing system.in()?
@@ -211,6 +259,9 @@ public class RPN {
 		if (letFlag == true) {
 			//write to variable
 			variables.put(toChange, resultant);
+			if(mode==0){
+				return "";
+			}
 		}
 		
 		result = resultant.toString();
@@ -242,8 +293,8 @@ public class RPN {
 		if (args.length == 0) {
 			runLoop();
 			
-		} else { 
-			readFiles();
+		} else {
+			readFiles(args);
 		}
 		
 		System.exit(0);
@@ -263,7 +314,7 @@ public class RPN {
 		while (j < i) {
 			
 			//https://docs.oracle.com/javase/7/docs/api/java/util/Stack.html
-			String[] resultTokens = read(1);
+			String[] resultTokens = read("", 1);
 			
 			String resultString = "";
 			if (resultTokens.length > 0) {
